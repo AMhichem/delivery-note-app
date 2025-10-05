@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Bon de Livraison</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+
+  <!-- Select2 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+   <!-- 🔄 Loading overlay -->
+  <div id="loadingOverlay">
+    <div class="loader"></div>
+    <p>Loading products…</p>
+  </div>    
+  <div class="note-container">
+    <!-- Header -->
+    <div class="note-header">
+      <h1>Bon de Livraison</h1>
+
+      <div class="header-fields">
+        <div class="field">
+          <label for="dateField">Date:</label>
+          <input type="date" id="dateField">
+        </div>
+        <div class="field">
+          <label for="noteNumber">Livraison N°:</label>
+          <input type="text" id="noteNumber" placeholder="BL-001">
+        </div>
+        <div class="field">
+          <label for="destField">Destinataire:</label>
+          <input type="text" id="destField" placeholder="Client Name">
+        </div>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <table class="note-table">
+      <thead>
+        <tr>
+          <th>N°</th>
+          <th>Désignation</th>
+          <th>Qté</th>
+          <th>PU</th>
+          <th>Total</th>
+          <th class="delete-col">    </th>
+        </tr>
+      </thead>
+      <tbody id="productRows"></tbody>
+      <tfoot>
+        <tr>
+          <td colspan="4" style="text-align:right;"><strong>Grand Total</strong></td>
+          <td id="grandTotal">0.00</td>
+          <td></td>
+        </tr>
+      </tfoot>
+    </table>
+
+    <!-- Buttons -->
+    <div class="note-actions">
+      <button id="addRow">➕ Ajouter</button>
+      <button id="printBtn">🖨️</button>
+
+    </div>
+  </div>
+
+  <!-- jQuery (required for Select2) -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <!-- Select2 JS -->
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+ 
+  <!-- Custom JS -->
+  <script src="script.js"></script>
+</body>
+</html>

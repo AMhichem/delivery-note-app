@@ -1,0 +1,314 @@
+/* ========== GLOBAL ========== */
+body {
+  font-family: 'Poppins', sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #eef2f7;
+  color: #333;
+  -webkit-tap-highlight-color: transparent; /* prevent highlight on tap */
+}
+
+.note-container {
+  max-width: 1100px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+}
+
+.note-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.note-header h1 {
+  margin: 0;
+  color: #0052cc;
+  font-size: 2.2rem;
+  font-weight: 700;
+}
+
+/* ========== HEADER FIELDS ========== */
+.header-fields {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 2rem;
+  margin-top: 1rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex: 1 1 200px;
+  min-width: 140px;
+}
+
+.field label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+  color: #444;
+}
+
+.field input {
+  width: 100%;
+  padding: 0.6rem;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  transition: border 0.2s, box-shadow 0.2s;
+}
+
+.field input:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 6px rgba(0,123,255,0.4);
+  outline: none;
+}
+
+/* ========== TABLE ========== */
+.note-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-bottom: 1.5rem;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.note-table th {
+  background: linear-gradient(135deg, #0052cc, #007bff);
+  color: white;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  padding: 0.9rem;
+  text-align: center;
+}
+
+.note-table td {
+  padding: 0.8rem;
+  text-align: center;
+  border-bottom: 1px solid #e6e6e6;
+  font-size: 0.95rem;
+}
+
+.note-table tbody tr:hover {
+  background: #f9fbff;
+  transition: background 0.3s ease;
+}
+
+.note-table tfoot td {
+  font-weight: bold;
+  background: #f1f4f9;
+  font-size: 1rem;
+}
+
+/* --- Description dropdown grows downward when text is long --- */
+.descSelect {
+  width: 100%;
+  white-space: normal;
+  height: auto;
+  min-height: 2.2em;
+  line-height: 1.4em;
+  font-size: 0.9rem;
+  padding: 4px;
+  overflow-wrap: anywhere;
+}
+
+/* ✅ Select2 display box fixes */
+.select2-container .select2-selection--single {
+  height: auto !important;
+  min-height: 2.2em;
+  display: flex !important;
+  align-items: center;
+  line-height: 1.4em !important;
+  white-space: normal !important;
+  word-wrap: break-word !important;
+  padding: 4px !important;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+  white-space: normal !important;
+  word-break: break-word !important;
+  overflow: visible !important;
+  line-height: 1.4em !important;
+  padding: 4px !important;
+}
+
+.select2-results__option {
+  white-space: normal !important;
+  line-height: 1.4em !important;
+}
+
+/* ========== BUTTONS ========== */
+.note-actions {
+  text-align: center;
+  margin-top: 1.5rem;
+}
+
+button {
+  background: linear-gradient(135deg, #007bff, #0052cc);
+  color: white;
+  border: none;
+  padding: 0.8rem 1.6rem;
+  margin: 0.4rem;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.25s;
+  font-size: 1rem;
+  touch-action: manipulation;
+}
+
+button:hover {
+  background: linear-gradient(135deg, #0052cc, #003d99);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.deleteBtn {
+  background: crimson;
+  border-radius: 6px;
+  padding: 0.5rem 0.8rem;
+  font-size: 0.85rem;
+}
+
+.deleteBtn:hover {
+  background: darkred;
+}
+
+/* ========== SELECT2 ========== */
+.select2-container {
+  width: 100% !important;
+  font-size: 0.95rem;
+}
+
+
+/* ========== MOBILE OPTIMIZATION ========== */
+@media (max-width: 768px) {
+  .note-container {
+    padding: 1rem;
+    margin: 0.5rem;
+    border-radius: 12px;
+  }
+
+  .note-header h1 {
+    font-size: 1.4rem;
+  }
+
+  .header-fields {
+    /*flex-direction: column;*/
+    align-items: stretch;
+    gap: 0.6rem;
+  }
+
+  .field {
+    width: 100%;
+  }
+
+  .note-table {
+    display: block;
+    overflow-x: auto;
+    border-radius: 10px;
+  }
+
+  .note-table th,
+  .note-table td {
+    font-size: 0.8rem;
+    padding: 0.5rem;
+}
+
+  button {
+    width: 100%;
+    font-size: 1rem;
+    padding: 1rem;
+  }
+
+  .deleteBtn {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.6rem;
+  }
+
+  /* Slightly larger touch areas */
+  input,
+  select,
+  .select2-selection {
+    font-size: 1rem !important;
+    padding: 0.8rem !important;
+    width: max-content!important;
+    }
+  /* 🔢 Make QTE (Quantity) and PU (Price) smaller for mobile */
+.qty,
+.price {
+  width: 50px !important;           /* narrow input boxes for small numeric fields */
+  font-size: 0.9rem !important;     /* slightly smaller text */
+  padding: 0.5rem !important;       /* smaller padding so they don’t stretch */
+  text-align:left;               /* center the numbers for clean look */
+}
+  
+
+}
+
+/* ========== PRINT STYLES ========== */
+@media print {
+  body {
+    background: white;
+    -webkit-print-color-adjust: exact;
+  }
+
+  .note-actions,
+  .delete-col,
+  .deleteBtn {
+    display: none !important;
+  }
+
+ /* .note-container {
+    box-shadow: none;
+    margin: 0;
+    padding: 0;
+    border-radius: 0;
+  }*/
+
+ /* .note-table th,
+  .note-table td {
+    font-size: 0.85rem;
+    padding: 0.4rem;
+    border: 1px solid #555;
+  }*/
+}
+
+/* 🔄 Loading overlay */
+#loadingOverlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(255,255,255,0.9);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  font-family: 'Poppins', sans-serif;
+  color: #333;
+}
+
+.loader {
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #3498db;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+#loadingOverlay.hidden {
+  display: none;
+}
