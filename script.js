@@ -42,7 +42,7 @@ function populateSelectOptions(select) {
   if ($(select).data('select2')) $(select).select2('destroy');
 
   $(select).select2({
-    placeholder: "Search or add product...",
+    placeholder: "recherche...",
     width: 'resolve',
     tags: true,
     createTag: params => {
@@ -70,7 +70,7 @@ function addRow() {
     <td class="row-number">${rowCount}</td>
     <td>
       <select class="descSelect">
-        <option value="">-- Select Product --</option>
+        <option value="">-- sélectionner --</option>
       </select>
     </td>
     <td><input type="number" min="1" value="1" class="qty product-input"></td>
@@ -187,3 +187,4 @@ window.addEventListener('afterprint', () => {
   document.querySelectorAll('#productRows tr').forEach(row => row.style.display = "");
   renumberRows();
 });
+
