@@ -42,7 +42,7 @@ function populateSelectOptions(select) {
   if ($(select).data('select2')) $(select).select2('destroy');
 
   $(select).select2({
-    placeholder: "recherche...",
+    placeholder: "recherche...              ",
     width: 'resolve',
     tags: true,
     createTag: params => {
@@ -187,4 +187,5 @@ window.addEventListener('afterprint', () => {
   document.querySelectorAll('#productRows tr').forEach(row => row.style.display = "");
   renumberRows();
 });
+
 
