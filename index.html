@@ -15,59 +15,81 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-   <!-- 🔄 Loading overlay -->
-  <div id="loadingOverlay">
-    <div class="loader"></div>
-    <p>Loading products…</p>
-  </div>    
-  <div class="note-container">
-    <!-- Header -->
-    <div class="note-header">
-      <h1>Bon de Livraison</h1>
+   <div id="authContainer">
+    <div class="auth-form">
+      <h2>Login</h2>
+      <input type="text" id="username" placeholder="Username">
+      <input type="password" id="password" placeholder="Password">
+      <button id="loginBtn">Login</button>
+      <button id="signupBtn">Sign Up</button>
+      <p id="authMessage"></p>
+    </div>
+  </div>
+  
+  <div id="mainApp" style="display: none;">
+    <!-- 🔄 Loading overlay -->
+    <div id="loadingOverlay">
+      <div class="loader"></div>
+      <p>Loading products…</p>
+    </div>
+    
+    <div class="note-container">
+      <!-- Header -->
+      <div class="note-header">
+        <h1>Bon de Livraison</h1>
 
-      <div class="header-fields">
-        <div class="field">
-          <label for="dateField">Date:</label>
-          <input type="date" id="dateField">
-        </div>
-        <div class="field">
-          <label for="noteNumber">Livraison N°:</label>
-          <input type="text" id="noteNumber" placeholder="BL-001">
-        </div>
-        <div class="field">
-          <label for="destField">Destinataire:</label>
-          <input type="text" id="destField" placeholder="Client Name">
+        <div class="header-fields">
+          <div class="field">
+            <label for="dateField">Date:</label>
+            <input type="date" id="dateField">
+          </div>
+          <div class="field">
+            <label for="noteNumber">Livraison N°:</label>
+            <input type="text" id="noteNumber" placeholder="BL-001">
+          </div>
+          <div class="field">
+            <label for="destField">Destinataire:</label>
+            <input type="text" id="destField" placeholder="Client Name">
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Table -->
-    <table class="note-table">
-      <thead>
-        <tr>
-          <th>N°</th>
-          <th>Désignation</th>
-          <th>Qté</th>
-          <th>PU</th>
-          <th>Total</th>
-          <th class="delete-col">    </th>
-        </tr>
-      </thead>
-      <tbody id="productRows"></tbody>
-      <tfoot>
-        <tr>
-          <td colspan="4" style="text-align:right;"><strong>Grand Total</strong></td>
-          <td id="grandTotal">0.00</td>
-          <td></td>
-        </tr>
-      </tfoot>
-    </table>
+      <!-- Upload Section -->
+      <div class="upload-section">
+        <h3>Upload Your Products Database (Excel)</h3>
+        <input type="file" id="excelFile" accept=".xlsx,.xls">
+        <button id="uploadBtn">Upload</button>
+        <p id="uploadMessage"></p>
+      </div>
 
-    <!-- Buttons -->
-    <div class="note-actions">
-      <button id="addRow">➕ Ajouter</button>
-      <button id="printBtn">🖨️</button>
+      <!-- Table -->
+      <table class="note-table">
+        <thead>
+          <tr>
+            <th>N°</th>
+            <th>Désignation</th>
+            <th>Qté</th>
+            <th>PU</th>
+            <th>Total</th>
+            <th class="delete-col">    </th>
+          </tr>
+        </thead>
+        <tbody id="productRows"></tbody>
+        <tfoot>
+          <tr>
+            <td colspan="4" style="text-align:right;"><strong>Grand Total</strong></td>
+            <td id="grandTotal">0.00</td>
+            <td></td>
+          </tr>
+        </tfoot>
+      </table>
 
+      <!-- Buttons -->
+      <div class="note-actions">
+        <button id="addRow">➕ Ajouter</button>
+        <button id="printBtn">🖨️</button>
+        <button id="logoutBtn">Logout</button>
+      </div>
     </div>
   </div>
 
