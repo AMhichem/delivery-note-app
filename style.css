@@ -1,3 +1,97 @@
+/* ========== AUTH FORM ========== */
+#authContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: #eef2f7;
+}
+
+.auth-form {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+  text-align: center;
+  width: 300px;
+}
+
+@media (max-width: 768px) {
+  .auth-form {
+    width: 90%;
+    padding: 1.5rem;
+  }
+}
+
+.auth-form h2 {
+  margin-bottom: 1rem;
+  color: #0052cc;
+}
+
+.auth-form input {
+  width: 100%;
+  padding: 0.6rem;
+  margin: 0.5rem 0;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+}
+
+.auth-form button {
+  width: 100%;
+  padding: 0.8rem;
+  margin: 0.5rem 0;
+  background: linear-gradient(135deg, #007bff, #0052cc);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.auth-form button:hover {
+  background: linear-gradient(135deg, #0052cc, #003d99);
+}
+
+#authMessage {
+  color: red;
+  margin-top: 1rem;
+}
+
+/* ========== UPLOAD SECTION ========== */
+.upload-section {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.upload-section h3 {
+  color: #0052cc;
+  margin-bottom: 1rem;
+}
+
+.upload-section input[type="file"] {
+  margin: 0.5rem 0;
+}
+
+.upload-section button {
+  background: linear-gradient(135deg, #28a745, #20c997);
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.upload-section button:hover {
+  background: linear-gradient(135deg, #20c997, #17a2b8);
+}
+
+#uploadMessage {
+  margin-top: 0.5rem;
+  color: green;
+}
+
 /* ========== GLOBAL ========== */
 body {
   font-family: 'Poppins', sans-serif;
@@ -208,6 +302,10 @@ button:hover {
     width: 100%;
   }
 
+  .upload-section h3 {
+    font-size: 1rem;
+  }
+
   .note-table {
     display: block;
     overflow-x: auto;
@@ -260,23 +358,10 @@ button:hover {
 
   .note-actions,
   .delete-col,
-  .deleteBtn {
+  .deleteBtn,
+  .upload-section {
     display: none !important;
   }
-
- /* .note-container {
-    box-shadow: none;
-    margin: 0;
-    padding: 0;
-    border-radius: 0;
-  }*/
-
- /* .note-table th,
-  .note-table td {
-    font-size: 0.85rem;
-    padding: 0.4rem;
-    border: 1px solid #555;
-  }*/
 }
 
 /* 🔄 Loading overlay */
