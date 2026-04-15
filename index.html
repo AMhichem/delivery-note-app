@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>DeliverPro — Bon de Livraison</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ═══════════════════════ AUTH SCREEN ═══════════════════════ -->
+<div id="authScreen" class="screen">
+  <div class="auth-panel">
+    <div class="auth-brand">
+      <div class="auth-logo">📦</div>
+      <h1>DeliverPro</h1>
+      <p>Gestion de bons de livraison</p>
+    </div>
+    <div class="auth-tabs">
+      <button class="tab-btn active" data-tab="login">Connexion</button>
+      <button class="tab-btn" data-tab="signup">Créer un compte</button>
+    </div>
+    <div class="auth-body">
+      <div id="loginTab" class="tab-content active">
+        <div class="field-group">
+          <label>Nom d'utilisateur</label>
+          <input type="text" id="loginUsername" placeholder="Votre identifiant" autocomplete="username">
+        </div>
+        <div class="field-group">
+          <label>Mot de passe</label>
+          <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password">
+        </div>
+        <button id="loginBtn" class="btn btn-primary btn-full">Se connecter →</button>
+      </div>
+      <div id="signupTab" class="tab-content">
+        <div class="field-group">
+          <label>Nom d'utilisateur</label>
+          <input type="text" id="signupUsername" placeholder="Choisissez un identifiant" autocomplete="username">
+        </div>
+        <div class="field-group">
+          <label>Mot de passe</label>
+          <input type="password" id="signupPassword" placeholder="Minimum 6 caractères" autocomplete="new-password">
+        </div>
+        <div class="field-group">
+          <label>Confirmer le mot de passe</label>
+          <input type="password" id="signupConfirm" placeholder="Répétez le mot de passe">
+        </div>
+        <button id="signupBtn" class="btn btn-primary btn-full">Créer le compte →</button>
+      </div>
+    </div>
+    <p id="authMessage" class="auth-msg"></p>
+  </div>
+</div>
+
+<!-- ═══════════════════════ MAIN APP ═══════════════════════ -->
+<div id="appScreen" class="screen hidden">
+
+  <!-- SIDEBAR -->
+  <aside id="sidebar">
+    <div class="sidebar-brand">
+      <span class="brand-icon">📦</span>
+      <span class="brand-name">DeliverPro</span>
+    </div>
+    <nav class="sidebar-nav">
+      <a class="nav-item active" data-view="dashboard" href="#">
+        <span class="nav-icon">🏠</span><span>Tableau de bord</span>
+      </a>
+      <a class="nav-item" data-view="new-bl" href="#">
+        <span class="nav-icon">➕</span><span>Nouveau BL</span>
+      </a>
+      <a class="nav-item" data-view="history" href="#">
+        <span class="nav-icon">📋</span><span>Historique</span>
+      </a>
+      <a class="nav-item" data-view="products" href="#">
+        <span class="nav-icon">🗃️</span><span>Produits</span>
+      </a>
+      <a class="nav-item" data-view="settings" href="#">
+        <span class="nav-icon">⚙️</span><span>Paramètres</span>
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-pill">
+        <div class="user-avatar" id="userAvatar">U</div>
+        <span id="userLabel">Utilisateur</span>
+      </div>
+      <button id="logoutBtn" class="btn-icon" title="Déconnexion">⏻</button>
+    </div>
+  </aside>
+
+  <!-- HAMBURGER (mobile) -->
+  <button id="menuToggle" class="hamburger">☰</button>
+  <div id="sidebarOverlay" class="sidebar-overlay hidden"></div>
+
+  <!-- MAIN CONTENT AREA -->
+  <main id="mainContent">
+
+    <!-- ── DASHBOARD VIEW ── -->
+    <div id="view-dashboard" class="view">
+      <div class="page-header">
+        <div>
+          <h2>Tableau de bord</h2>
+          <p class="subtitle" id="dashGreeting">Bonjour !</p>
+        </div>
+        <button class="btn btn-primary" data-view="new-bl">+ Nouveau BL</button>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">BLs ce mois</div>
+          <div class="stat-value" id="statMonth">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total ce mois (DA)</div>
+          <div class="stat-value" id="statRevenue">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Produits en base</div>
+          <div class="stat-value" id="statProducts">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Clients uniques</div>
+          <div class="stat-value" id="statClients">0</div>
+        </div>
+      </div>
+      <div class="section-title">BLs récents</div>
+      <div id="recentBLs" class="bl-list">
+        <div class="empty-state">Aucun bon de livraison. <a href="#" data-view="new-bl">Créer le premier →</a></div>
+      </div>
+    </div>
+
+    <!-- ── NEW / EDIT BL VIEW ── -->
+    <div id="view-new-bl" class="view hidden">
+      <div class="page-header">
+        <div>
+          <h2 id="blFormTitle">Nouveau Bon de Livraison</h2>
+          <p class="subtitle" id="blFormSubtitle">Remplissez les informations ci-dessous</p>
+        </div>
+        <div class="header-actions">
+          <button id="saveDraftBtn" class="btn btn-outline">💾 Sauvegarder</button>
+          <button id="printBtn" class="btn btn-outline">🖨️ Imprimer</button>
+          <button id="exportPdfBtn" class="btn btn-primary">📄 Exporter PDF</button>
+        </div>
+      </div>
+
+      <!-- BL FORM (PRINTABLE AREA) -->
+      <div id="blPrintArea" class="bl-document">
+
+        <!-- Company header (from settings) -->
+        <div class="bl-company-header">
+          <div class="company-info">
+            <div class="company-name" id="printCompanyName">Votre Entreprise</div>
+            <div class="company-details" id="printCompanyDetails"></div>
+          </div>
+          <div class="bl-title-block">
+            <div class="bl-title-text">BON DE LIVRAISON</div>
+            <div class="bl-meta">
+              <div><strong>N°:</strong> <span id="printBLNumber">—</span></div>
+              <div><strong>Date:</strong> <span id="printBLDate">—</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- BL header fields -->
+        <div class="bl-header-fields no-print-hide">
+          <div class="bl-field-row">
+            <div class="field-group">
+              <label>N° du BL</label>
+              <input type="text" id="blNumber" placeholder="BL-001">
+            </div>
+            <div class="field-group">
+              <label>Date</label>
+              <input type="date" id="blDate">
+            </div>
+            <div class="field-group">
+              <label>Destinataire (Client)</label>
+              <input type="text" id="blClient" placeholder="Nom du client" list="clientSuggestions">
+              <datalist id="clientSuggestions"></datalist>
+            </div>
+            <div class="field-group">
+              <label>Adresse de livraison</label>
+              <input type="text" id="blAddress" placeholder="Adresse…">
+            </div>
+          </div>
+        </div>
+
+        <!-- Print-only client block -->
+        <div class="bl-client-print print-only">
+          <div><strong>Destinataire:</strong> <span id="printClient"></span></div>
+          <div><strong>Adresse:</strong> <span id="printAddress"></span></div>
+        </div>
+
+        <!-- Items table -->
+        <table class="bl-table">
+          <thead>
+            <tr>
+              <th style="width:40px">N°</th>
+              <th>Désignation</th>
+              <th style="width:70px">Qté</th>
+              <th style="width:90px">PU (DA)</th>
+              <th style="width:100px">Total (DA)</th>
+              <th class="no-print" style="width:40px"></th>
+            </tr>
+          </thead>
+          <tbody id="blRows"></tbody>
+          <tfoot>
+            <tr class="total-row">
+              <td colspan="4" class="text-right"><strong>Sous-total HT</strong></td>
+              <td id="subtotalHT">0,00</td>
+              <td class="no-print"></td>
+            </tr>
+            <tr class="total-row tva-row">
+              <td colspan="3" class="text-right"><strong>TVA</strong></td>
+              <td class="no-print">
+                <select id="tvaSelect" class="tva-select">
+                  <option value="0">0%</option>
+                  <option value="9">9%</option>
+                  <option value="19" selected>19%</option>
+                </select>
+              </td>
+              <td class="print-only" id="tvaRatePrint">19%</td>
+              <td id="tvaAmount">0,00</td>
+              <td class="no-print"></td>
+            </tr>
+            <tr class="total-row grand-total-row">
+              <td colspan="4" class="text-right"><strong>TOTAL TTC</strong></td>
+              <td id="grandTotalTTC"><strong>0,00</strong></td>
+              <td class="no-print"></td>
+            </tr>
+          </tfoot>
+        </table>
+
+        <div class="add-row-wrap no-print-hide">
+          <button id="addRowBtn" class="btn btn-outline btn-sm">➕ Ajouter une ligne</button>
+        </div>
+
+        <!-- Notes -->
+        <div class="bl-notes-section">
+          <div class="field-group no-print-hide">
+            <label>Remarques / Notes</label>
+            <textarea id="blNotes" rows="3" placeholder="Conditions de paiement, remarques…"></textarea>
+          </div>
+          <div class="print-only bl-notes-print" id="blNotesPrint"></div>
+        </div>
+
+        <!-- Signature area -->
+        <div class="bl-signatures print-only">
+          <div class="sig-box"><div class="sig-label">Signature émetteur</div><div class="sig-line"></div></div>
+          <div class="sig-box"><div class="sig-label">Signature récepteur</div><div class="sig-line"></div></div>
+        </div>
+
+      </div><!-- /bl-document -->
+
+      <div id="blSaveStatus" class="save-status"></div>
+    </div>
+
+    <!-- ── HISTORY VIEW ── -->
+    <div id="view-history" class="view hidden">
+      <div class="page-header">
+        <div>
+          <h2>Historique des BLs</h2>
+          <p class="subtitle">Tous vos bons de livraison</p>
+        </div>
+        <div class="header-actions">
+          <input type="search" id="historySearch" placeholder="🔍 Rechercher…" class="search-input">
+          <select id="historyFilter" class="filter-select">
+            <option value="all">Tous les mois</option>
+          </select>
+        </div>
+      </div>
+      <div id="historyList" class="bl-list"></div>
+    </div>
+
+    <!-- ── PRODUCTS VIEW ── -->
+    <div id="view-products" class="view hidden">
+      <div class="page-header">
+        <div>
+          <h2>Base de produits</h2>
+          <p class="subtitle">Gérez votre catalogue</p>
+        </div>
+        <div class="header-actions">
+          <button id="addProductBtn" class="btn btn-outline">+ Ajouter manuellement</button>
+          <label class="btn btn-primary" for="excelUpload">📤 Importer Excel</label>
+          <input type="file" id="excelUpload" accept=".xlsx,.xls" class="hidden">
+        </div>
+      </div>
+      <p id="uploadMsg" class="upload-msg"></p>
+      <input type="search" id="productSearch" placeholder="🔍 Filtrer les produits…" class="search-input" style="margin-bottom:1rem;width:100%;max-width:400px">
+      <div id="productsTableWrap">
+        <table class="data-table" id="productsTable">
+          <thead><tr><th>Désignation</th><th>Prix unitaire (DA)</th><th></th></tr></thead>
+          <tbody id="productsTbody"></tbody>
+        </table>
+      </div>
+      <!-- Manual add form -->
+      <div id="addProductForm" class="card hidden" style="margin-top:1.5rem">
+        <h3 style="margin-top:0">Nouveau produit</h3>
+        <div class="bl-field-row">
+          <div class="field-group"><label>Désignation</label><input type="text" id="newProdName" placeholder="Nom du produit"></div>
+          <div class="field-group"><label>Prix (DA)</label><input type="number" id="newProdPrice" min="0" step="0.01" placeholder="0.00"></div>
+        </div>
+        <button id="saveProductBtn" class="btn btn-primary">Ajouter</button>
+        <button id="cancelProductBtn" class="btn btn-outline">Annuler</button>
+      </div>
+    </div>
+
+    <!-- ── SETTINGS VIEW ── -->
+    <div id="view-settings" class="view hidden">
+      <div class="page-header">
+        <div><h2>Paramètres</h2><p class="subtitle">Personnalisez votre entreprise</p></div>
+        <button id="saveSettingsBtn" class="btn btn-primary">💾 Sauvegarder</button>
+      </div>
+      <div class="settings-grid">
+        <div class="card">
+          <h3>Informations de l'entreprise</h3>
+          <div class="field-group"><label>Nom de l'entreprise</label><input type="text" id="settingCompany" placeholder="Votre Entreprise SARL"></div>
+          <div class="field-group"><label>Adresse</label><input type="text" id="settingAddress" placeholder="Rue, Ville, Wilaya"></div>
+          <div class="field-group"><label>Téléphone</label><input type="tel" id="settingPhone" placeholder="+213 …"></div>
+          <div class="field-group"><label>Email</label><input type="email" id="settingEmail" placeholder="contact@entreprise.dz"></div>
+          <div class="field-group"><label>RC / NIF / NIS</label><input type="text" id="settingRC" placeholder="N° Registre de Commerce"></div>
+        </div>
+        <div class="card">
+          <h3>Préférences BL</h3>
+          <div class="field-group"><label>Préfixe BL</label><input type="text" id="settingPrefix" placeholder="BL" maxlength="10"></div>
+          <div class="field-group"><label>TVA par défaut</label>
+            <select id="settingTva">
+              <option value="0">0%</option>
+              <option value="9">9%</option>
+              <option value="19" selected>19%</option>
+            </select>
+          </div>
+          <div class="field-group"><label>Devise</label><input type="text" id="settingCurrency" placeholder="DA" maxlength="5"></div>
+          <div class="field-group"><label>Pied de page BL</label><textarea id="settingFooter" rows="3" placeholder="Merci pour votre confiance. Paiement à 30 jours."></textarea></div>
+        </div>
+      </div>
+      <p id="settingsSaved" class="save-status" style="margin-top:1rem"></p>
+    </div>
+
+  </main>
+</div>
+
+<!-- ── MODAL ── -->
+<div id="modal" class="modal hidden">
+  <div class="modal-box">
+    <div id="modalContent"></div>
+    <div class="modal-actions">
+      <button id="modalCancel" class="btn btn-outline">Annuler</button>
+      <button id="modalConfirm" class="btn btn-danger">Confirmer</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
