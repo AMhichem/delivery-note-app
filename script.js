@@ -375,7 +375,8 @@ function addRow(data = {}) {
 
   function calcSub() {
     const total = (parseFloat(qty.value) || 0) * (parseFloat(pu.value) || 0);
-    sub.textContent = fmtNum(total);
+    sub.dataset.value  = total;          // valeur brute — jamais parsée depuis le texte
+    sub.textContent    = fmtNum(total);
     updateTotals();
   }
 
@@ -405,7 +406,8 @@ function renumberRows() {
 function updateTotals() {
   let ht = 0;
   document.querySelectorAll('#blRows .sub-cell').forEach(td => {
-    ht += parseFloat(td.textContent.replace(',', '.')) || 0;
+    // Lire la valeur brute stockée dans data-value — jamais le texte formaté
+    ht += parseFloat(td.dataset.value) || 0;
   });
   const tvaRate = parseFloat(document.getElementById('tvaSelect').value) || 0;
   const tva     = ht * tvaRate / 100;
@@ -431,9 +433,9 @@ function collectBL() {
     if (desc) {
       rows.push({
         desc,
-        qty:   parseFloat(qty?.value)  || 0,
-        price: parseFloat(pu?.value)   || 0,
-        sub:   parseFloat(sub?.textContent.replace(',','.')) || 0
+        qty:   parseFloat(qty?.value)          || 0,
+        price: parseFloat(pu?.value)           || 0,
+        sub:   parseFloat(sub?.dataset.value)  || 0   // valeur brute, pas le texte formaté
       });
     }
   });
