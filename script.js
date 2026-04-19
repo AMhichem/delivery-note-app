@@ -143,7 +143,42 @@ function navigateTo(view) {
 /* ══════════════════════════════════════════════
    INIT APP
 ══════════════════════════════════════════════ */
+/* ── PRODUITS DE DÉMONSTRATION (chargés une seule fois si la base est vide) ── */
+const DEMO_PRODUCTS = [
+  { desc: 'Eau minérale 1.5L (caisse 12)',      price: 480  },
+  { desc: 'Huile de table 5L',                  price: 1250 },
+  { desc: 'Sucre blanc 50kg',                   price: 4500 },
+  { desc: 'Farine type 55 – 50kg',              price: 3200 },
+  { desc: 'Lait UHT 1L (caisse 12)',            price: 1080 },
+  { desc: 'Café moulu 250g',                    price: 580  },
+  { desc: 'Couscous 5kg',                       price: 980  },
+  { desc: 'Pâtes alimentaires 500g (carton 20)',price: 1600 },
+  { desc: 'Tomates pelées 800g (caisse 12)',    price: 1440 },
+  { desc: 'Concentré de tomates 70g (carton 24)',price: 1200},
+  { desc: 'Sardines en boîte 125g (carton 50)', price: 3750 },
+  { desc: 'Savon de ménage 400g (carton 24)',   price: 1920 },
+  { desc: 'Détergent 1kg',                      price: 420  },
+  { desc: 'Papier hygiénique (pack 12)',         price: 720  },
+  { desc: 'Sel de cuisine 1kg',                 price: 80   },
+  { desc: 'Levure chimique 100g',               price: 120  },
+  { desc: 'Chips 80g (carton 24)',              price: 1680 },
+  { desc: 'Biscuits 200g (carton 12)',          price: 960  },
+  { desc: 'Jus de fruits 1L (carton 12)',       price: 1560 },
+  { desc: 'Eau de Javel 1L (carton 12)',        price: 840  },
+];
+
+function loadDemoProducts() {
+  if (getProducts().length > 0) return;   // déjà des produits → ne rien faire
+  const withIds = DEMO_PRODUCTS.map(p => ({
+    id:    Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+    desc:  p.desc,
+    price: p.price
+  }));
+  saveProducts(withIds);
+}
+
 function initApp() {
+  loadDemoProducts();
   productsDB = getProducts();
   showScreen('appScreen');
   const u = currentUser;
@@ -550,44 +585,127 @@ async function confirmDeleteBL(id) {
 /* ══════════════════════════════════════════════
    PRODUCTS
 ══════════════════════════════════════════════ */
-function renderProducts() {
-  const prods = getProducts();
-  document.getElementById('statProducts').textContent = prods.length;
-  renderProductsTable(prods);
+
+/* Garantit que chaque produit a un id unique (migration des anciens produits sans id) */
+function ensureProductIds(prods) {
+  let changed = false;
+  prods.forEach(p => {
+    if (!p.id) { p.id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6); changed = true; }
+  });
+  if (changed) saveProducts(prods);
+  return prods;
 }
 
-function renderProductsTable(prods) {
+/* Mode d'édition courant : null = ajout, string = id du produit en cours d'édition */
+let editingProductId = null;
+
+function renderProducts() {
+  const prods = ensureProductIds(getProducts());
+  document.getElementById('statProducts').textContent = prods.length;
+  renderProductsTable(prods);
+  setupProductForm();
+}
+
+function renderProductsTable(visibleProds) {
   const tbody = document.getElementById('productsTbody');
-  if (!prods.length) {
+  if (!visibleProds.length) {
     tbody.innerHTML = `<tr><td colspan="3" class="empty-cell">Aucun produit. Importez un fichier Excel ou ajoutez manuellement.</td></tr>`;
     return;
   }
-  tbody.innerHTML = prods.map((p, i) => `
+  /* On stocke l'id du produit dans data-prod-id — jamais l'index du tableau filtré */
+  tbody.innerHTML = visibleProds.map(p => `
     <tr>
       <td>${escHtml(p.desc)}</td>
       <td>${fmtNum(p.price)}</td>
       <td class="td-actions">
-        <button class="btn-icon btn-danger-icon" data-prod-del="${i}" title="Supprimer">🗑️</button>
+        <button class="btn-icon" data-prod-edit="${escHtml(p.id)}" title="Modifier">✏️</button>
+        <button class="btn-icon btn-danger-icon" data-prod-del="${escHtml(p.id)}" title="Supprimer">🗑️</button>
       </td>
     </tr>`).join('');
 
   tbody.querySelectorAll('[data-prod-del]').forEach(btn => {
     btn.addEventListener('click', async () => {
-      const i   = parseInt(btn.dataset.prodDel);
-      const yes = await showModal(`Supprimer <strong>${escHtml(prods[i].desc)}</strong> ?`);
+      const id  = btn.dataset.prodDel;
+      /* Toujours lire la liste complète depuis le stockage — pas le tableau filtré */
+      const all = getProducts();
+      const prod = all.find(p => p.id === id);
+      if (!prod) return;
+      const yes = await showModal(`Supprimer <strong>${escHtml(prod.desc)}</strong> ?`);
       if (!yes) return;
-      prods.splice(i, 1);
-      saveProducts(prods);
-      renderProducts();
+      saveProducts(all.filter(p => p.id !== id));
+      /* Conserver le filtre de recherche actif après suppression */
+      applyProductSearch();
+      document.getElementById('statProducts').textContent = getProducts().length;
+    });
+  });
+
+  tbody.querySelectorAll('[data-prod-edit]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id  = btn.dataset.prodEdit;
+      const all = getProducts();
+      const prod = all.find(p => p.id === id);
+      if (!prod) return;
+      openEditProduct(prod);
     });
   });
 }
 
-document.getElementById('productSearch').addEventListener('input', e => {
-  const q = e.target.value.toLowerCase();
-  const prods = getProducts().filter(p => p.desc.toLowerCase().includes(q));
-  renderProductsTable(prods);
-});
+function openEditProduct(prod) {
+  editingProductId = prod.id;
+  document.getElementById('newProdName').value  = prod.desc;
+  document.getElementById('newProdPrice').value = prod.price;
+  document.getElementById('saveProductBtn').textContent = 'Modifier';
+  document.getElementById('addProductForm').classList.remove('hidden');
+}
+
+function resetProductForm() {
+  editingProductId = null;
+  document.getElementById('newProdName').value  = '';
+  document.getElementById('newProdPrice').value = '';
+  document.getElementById('saveProductBtn').textContent = 'Ajouter';
+  document.getElementById('addProductForm').classList.add('hidden');
+}
+
+/* Un seul listener sur le bouton Sauvegarder — pas de cloneNode */
+function setupProductForm() {
+  const btn = document.getElementById('saveProductBtn');
+  /* Remplacer une seule fois pour repartir d'un bouton sans listeners accumulés */
+  if (btn.dataset.initialized) return;
+  btn.dataset.initialized = 'true';
+
+  btn.addEventListener('click', () => {
+    const name  = document.getElementById('newProdName').value.trim();
+    const price = parseFloat(document.getElementById('newProdPrice').value) || 0;
+    if (!name) return;
+
+    const all = getProducts();
+
+    if (editingProductId) {
+      /* Modification : on retrouve le produit par son id dans la liste complète */
+      const idx = all.findIndex(p => p.id === editingProductId);
+      if (idx >= 0) all[idx] = { ...all[idx], desc: name, price };
+      saveProducts(all);
+    } else {
+      /* Ajout d'un nouveau produit */
+      all.push({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), desc: name, price });
+      saveProducts(all);
+    }
+
+    resetProductForm();
+    /* Conserver le filtre de recherche actif après ajout/modification */
+    applyProductSearch();
+    document.getElementById('statProducts').textContent = getProducts().length;
+  });
+}
+
+function applyProductSearch() {
+  const q = document.getElementById('productSearch').value.toLowerCase();
+  const all = getProducts();
+  const visible = q ? all.filter(p => p.desc.toLowerCase().includes(q)) : all;
+  renderProductsTable(visible);
+}
+
+document.getElementById('productSearch').addEventListener('input', applyProductSearch);
 
 /* Excel upload */
 document.getElementById('excelUpload').addEventListener('change', function() {
@@ -614,23 +732,10 @@ document.getElementById('excelUpload').addEventListener('change', function() {
 
 /* Manual add */
 document.getElementById('addProductBtn').addEventListener('click', () => {
+  resetProductForm();
   document.getElementById('addProductForm').classList.remove('hidden');
 });
-document.getElementById('cancelProductBtn').addEventListener('click', () => {
-  document.getElementById('addProductForm').classList.add('hidden');
-});
-document.getElementById('saveProductBtn').addEventListener('click', () => {
-  const name  = document.getElementById('newProdName').value.trim();
-  const price = parseFloat(document.getElementById('newProdPrice').value) || 0;
-  if (!name) return;
-  const prods = getProducts();
-  prods.push({ desc: name, price });
-  saveProducts(prods);
-  document.getElementById('newProdName').value  = '';
-  document.getElementById('newProdPrice').value = '';
-  document.getElementById('addProductForm').classList.add('hidden');
-  renderProducts();
-});
+document.getElementById('cancelProductBtn').addEventListener('click', resetProductForm);
 
 /* ══════════════════════════════════════════════
    SETTINGS
